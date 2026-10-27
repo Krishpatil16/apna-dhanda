@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>What do you need today? · {{BRAND}}</title>
+<meta name="description" content="Find shops near you on {{BRAND}}: grocery, restaurants, salons, clinics and repair. Order with just your name and number.">
+<meta property="og:title" content="{{BRAND}} · What do you need today?">
+<meta property="og:description" content="Pick what you need and order in a tap.">
+<meta name="theme-color" content="#fb7a2c">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="{{BRAND}}">
+<link rel="stylesheet" href="/shops.css?v=10.16.2">
+</head>
+<body class="cust c-cats">
+<header class="c-top">
+  <a class="c-brand" href="/">{{BRAND_MARK}}<span><b>{{BRAND}}</b><small data-en="Shops near you" data-hi="आपके पास की दुकानें">Shops near you</small></span></a>
+  <button class="lang" id="langBtn" type="button" aria-label="Switch language">EN</button>
+</header>
+<section class="c-hero">
+  <p class="c-hi" data-en="Hello! 👋" data-hi="नमस्ते! 👋">Hello! 👋</p>
+  <h1 data-en="What do you need today?" data-hi="आज क्या चाहिए?">What do you need today?</h1>
+  <p class="c-sub" data-en="Pick a category to see shops near you." data-hi="कैटेगरी चुनें, पास की दुकानें देखें।">Pick a category to see shops near you.</p>
+  <span class="blob b1" aria-hidden="true"></span><span class="blob b2" aria-hidden="true"></span>
+</section>
+<main class="c-main">
+  <ul class="cats" id="cats" aria-label="Categories">{{CATEGORY_TILES}}</ul>
+</main>
+<script src="/shops.js?v=10.16.2"></script>
+</body>
+</html>
