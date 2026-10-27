@@ -1,0 +1,34 @@
+
+import { chromium } from "playwright-core";
+const BASE = process.env.BASE, OUT = process.env.OUT, USER = process.env.AUSER, PASS = process.env.APASS, PFX = process.env.PFX || "";
+const exe = `${process.env.HOME}/.cache/ms-playwright/chromium-1243/chrome-linux64/chrome`;
+const b = await chromium.launch({ executablePath: exe, args: ["--no-sandbox"] });
+const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: "hi-IN" });
+const errors = []; const log = {};
+const page = await ctx.newPage();
+page.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
+page.on("pageerror", e => errors.push("pageerror: " + e.message));
+await page.goto(BASE + "/admin", { waitUntil: "networkidle" });
+await page.waitForTimeout(800); if (await page.locator("#u").count()) { await page.fill("#u", USER); await page.fill("#p", PASS); await page.locator("#f button.btn-primary").click(); }
+await page.waitForSelector("#tabs:not([hidden])", { timeout: 15000 });
+await page.waitForTimeout(1200);
+log.bestCard = await page.locator("details:has(.bs-list)").count();
+await page.click("[data-tab=reports]"); await page.waitForSelector(".rv-big", { timeout: 15000 }); await page.waitForTimeout(400);
+log.reportBig = await page.locator(".rv-big").innerText(); log.bars = await page.locator(".bar").count();
+await page.screenshot({ path: `${OUT}/${PFX}admin-reports.png` });
+await page.click("[data-r='30d']"); await page.waitForSelector(".rv-big"); await page.waitForTimeout(300);
+log.report30 = await page.locator(".rv-big").innerText();
+await page.click("[data-tab=products]"); await page.waitForTimeout(800);
+await page.click("[data-goto=history]"); await page.waitForSelector(".h-row, #hlist .empty", { timeout: 15000 }); await page.waitForTimeout(300);
+log.histRows = await page.locator(".h-row").count();
+await page.screenshot({ path: `${OUT}/${PFX}stock-history.png` });
+await page.click("[data-h=stock]"); await page.waitForTimeout(700); log.histStock = await page.locator(".h-row").count();
+await page.click("[data-tab=offers]"); await page.waitForTimeout(800);
+await page.click("#addO"); await page.waitForTimeout(300); await page.selectOption("#okind", "cart_flat"); await page.waitForTimeout(200);
+log.cartRowVisible = await page.locator("#cartRow").isVisible(); log.itemsHidden = !(await page.locator("#itemsRow").isVisible());
+await page.screenshot({ path: `${OUT}/${PFX}admin-offer-cart.png` });
+await page.click("#sheetClose");
+await page.click("[data-tab=settings]"); await page.waitForTimeout(800);
+log.logoField = await page.locator("#lph").count(); log.backupBtn = await page.locator("a[href='/api/admin/backup']").count();
+console.log(JSON.stringify({log, errors}, null, 1));
+await b.close();
