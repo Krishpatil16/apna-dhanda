@@ -1,0 +1,46 @@
+:root{--teal:#0f3d36;--teal2:#11624f;--emerald:#14946d;--mint:#e8f6f0;--gold:#d8ad4b;--ink:#17231f;--muted:#66736e;--line:#e7e1d4;--cream:#faf7f0;--font:"Mukta","Noto Sans","Segoe UI",system-ui,-apple-system,Roboto,sans-serif}
+*{box-sizing:border-box}html,body{margin:0}body{font-family:var(--font);background:var(--cream);color:var(--ink);-webkit-tap-highlight-color:transparent;padding-bottom:150px}button{font:inherit}
+.salon-head{position:relative;overflow:hidden;color:#fff;background:radial-gradient(120% 140% at 100% 0,#1c8a6a 0,transparent 55%),linear-gradient(135deg,var(--teal) 0,var(--teal2) 60%,#0c3a32 100%);padding:14px 18px 26px;border-radius:0 0 26px 26px;box-shadow:0 10px 30px -14px rgba(15,61,54,.7)}
+.salon-head:after{content:"";position:absolute;inset:-40% auto -40% -60%;width:45%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.18),transparent);transform:skewX(-18deg);animation:shine 5.5s ease-in-out infinite}
+@keyframes shine{0%,55%{left:-60%}100%{left:130%}}
+@media (prefers-reduced-motion:reduce){.salon-head:after{animation:none;display:none}}
+.salon-head-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1}.salon-brand{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-weight:700}
+.salon-lang{border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.13);backdrop-filter:blur(8px);color:#fff;border-radius:999px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer}
+.salon-lang i{opacity:.5;font-style:normal;margin:0 5px}.salon-lang span{opacity:.6}.salon-lang span.on{opacity:1;color:#ffe7a8}
+.salon-hero{display:flex;gap:14px;align-items:center;margin-top:18px;position:relative;z-index:1}
+.salon-seal{flex:0 0 58px;height:58px;border-radius:18px;display:grid;place-items:center;font-size:28px;background:linear-gradient(145deg,#f4d58a,var(--gold));box-shadow:0 8px 20px -8px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.6)}
+.salon-overline{font-size:11px;letter-spacing:.16em;font-weight:800;color:#ffe2a0}.salon-hero h1{margin:1px 0 4px;font-size:25px;line-height:1.1;letter-spacing:-.01em}
+.salon-status{font-size:13px;opacity:.95;display:flex;flex-wrap:wrap;gap:6px;align-items:center}#salonStatus{color:#9ff0c9;font-weight:700}#salonStatus.closed{color:#ffb4a8}.salon-dot{opacity:.5}
+.salon-main{padding:20px 16px 8px;max-width:640px;margin:0 auto}
+.salon-intro h2{margin:2px 0 4px;font-size:22px;letter-spacing:-.01em}.salon-intro p{margin:0 0 6px;color:var(--muted);font-size:14px;line-height:1.4}
+.salon-eyebrow{font-size:11px;letter-spacing:.16em;font-weight:800;color:var(--emerald)}
+.salon-group{margin-top:22px}.salon-group-heading{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.salon-group-icon{width:30px;height:30px;border-radius:10px;background:var(--mint);display:grid;place-items:center;font-size:16px}
+.salon-group-heading h3{margin:0;font-size:17px;flex:1}.salon-group-number{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.08em}
+.salon-tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.salon-tile{position:relative;display:flex;align-items:center;gap:9px;text-align:left;min-height:66px;padding:10px 30px 10px 10px;border-radius:16px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.02),0 8px 18px -14px rgba(15,61,54,.45);transition:transform .12s,border-color .15s,background .15s}
+.salon-tile:active{transform:scale(.97)}
+.salon-tile-icon{flex:0 0 38px;height:38px;border-radius:12px;background:#f5f1e6;display:grid;place-items:center;font-size:20px}
+.salon-tile-text{display:flex;flex-direction:column;min-width:0}.salon-tile-text b{font-size:14px;line-height:1.2;font-weight:700}.salon-tile-text small{font-size:12px;color:var(--teal2);font-weight:700;margin-top:2px}
+.salon-tick{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;color:var(--muted);background:#f1ede2}
+.salon-tile.selected{border-color:var(--emerald);background:linear-gradient(160deg,#f2fbf7,#e3f5ec)}
+.salon-tile.selected .salon-tile-icon{background:#fff}.salon-tile.selected .salon-tick{background:var(--emerald);color:#fff;box-shadow:0 3px 8px -2px rgba(20,148,109,.6)}
+.salon-loading{color:var(--muted);text-align:center;padding:30px 0}
+.salon-end{display:flex;gap:8px;justify-content:center;color:var(--muted);font-size:13px;margin:26px 0 6px}.salon-end span:first-child{color:var(--gold)}
+.salon-bottom{position:fixed;left:0;right:0;bottom:62px;padding:0 14px 10px;z-index:20;pointer-events:none}
+.salon-book-btn{pointer-events:auto;width:100%;max-width:612px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;border:0;border-radius:18px;padding:15px 18px;color:#fff;font-size:15px;font-weight:800;background:linear-gradient(135deg,var(--teal2),var(--emerald));box-shadow:0 14px 28px -12px rgba(17,98,79,.85);cursor:pointer}
+.salon-book-btn #selCount{font-weight:600;opacity:.92}.salon-book-btn:disabled{background:#c9d3cf;box-shadow:none;cursor:default;color:#f7f9f8}
+.salon-nav{position:fixed;left:0;right:0;bottom:0;height:62px;display:flex;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line);z-index:21;padding-bottom:env(safe-area-inset-bottom)}
+.salon-nav a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-decoration:none;color:var(--muted);font-size:12px;gap:1px}.salon-nav a span{font-size:19px}.salon-nav a[aria-current]{color:var(--teal2)}.salon-nav a[aria-current] b{border-bottom:2px solid var(--gold)}
+.salon-sheet-back{position:fixed;inset:0;background:rgba(9,25,22,.5);z-index:30}
+.salon-sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:#fff;border-radius:26px 26px 0 0;padding:12px 20px calc(22px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto;box-shadow:0 -20px 40px -20px rgba(0,0,0,.4);animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}
+.salon-grab{display:block;width:42px;height:5px;border-radius:9px;background:#ddd;margin:0 auto 12px}.salon-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:0;background:#f2efe7;cursor:pointer}
+.salon-sheet-mark{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;font-size:22px;background:linear-gradient(145deg,#f4d58a,var(--gold));margin-bottom:10px}
+.salon-sheet h2{margin:2px 0 6px;font-size:22px}.salon-summary{margin:0 0 16px;color:var(--teal2);font-weight:700;font-size:14px;line-height:1.4}
+.salon-sheet label{display:block;font-weight:700;font-size:14px;margin-bottom:6px}
+.salon-sheet input{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:14px;font-size:17px;outline:none;background:#fcfbf8}.salon-sheet input:focus{border-color:var(--emerald);box-shadow:0 0 0 4px rgba(20,148,109,.12)}
+.salon-error{color:#b42318;font-size:13px;min-height:18px;margin:6px 0}
+.salon-submit{width:100%;border:0;border-radius:16px;padding:15px;font-size:16px;font-weight:800;color:#fff;background:linear-gradient(135deg,var(--teal2),var(--emerald));box-shadow:0 12px 22px -12px rgba(17,98,79,.8);cursor:pointer}.salon-submit:disabled{opacity:.6}
+.salon-sheet-foot{text-align:center;color:var(--muted);font-size:12px;margin:12px 0 0}
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:#17231f;color:#fff;padding:9px 14px;border-radius:12px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1}
