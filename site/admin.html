@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Shop panel · {{BRAND}}</title>
+<meta name="theme-color" content="#1f6b3a">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta name="ak-app" content="admin">
+<link rel="manifest" href="/admin.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="{{BRAND}}">
+<meta name="ad-brand" content="{{BRAND}}">
+<link rel="preload" href="/api/admin/state" as="fetch" crossorigin>
+<script src="/admin-boot.js?v=10.16.2-2" async></script>
+<link rel="stylesheet" href="/splash.css?v=10.16.2">
+<script src="/splash.js?v=10.16.2"></script>
+<link rel="stylesheet" href="/styles.css?v=10.16.2">
+<link rel="stylesheet" href="/admin.css?v=10.16.2">
+</head>
+<body class="admin">
+{{SPLASH}}
+<div id="devBanner" class="dev-banner" role="status" hidden></div>
+<header class="a-top">
+  <a href="/" class="a-brand">{{BRAND_MARK}} <span id="aStore">Shop panel</span></a><span class="role-pill" title="Apna Dhanda Shop app">🏪 Shop</span>
+  <span class="a-right"><span id="aUser"></span><button class="bell" id="bellBtn" type="button" aria-label="Notifications" hidden><span aria-hidden="true">🔔</span><i id="bellBadge" hidden></i></button><button class="lang" id="langBtn" type="button">EN</button></span>
+</header>
+<div id="issueBanner" class="issue-banner" role="status" hidden></div>
+<div id="svcBanner" class="svc-banner" role="status" hidden></div>
+<div id="shopBar" class="shop-bar" hidden></div>
+<main id="app" class="a-main"><p class="loading">…</p></main>
+<nav class="a-tabs" id="tabs" hidden>
+  <button type="button" data-tab="today"><span>📋</span><b data-t="a_today">Today</b></button>
+  <button type="button" data-tab="orders"><span>🛒</span><b data-t="a_orders">ऑर्डर</b><i id="newBadge" hidden></i></button>
+  <button type="button" data-tab="stock"><span>📦</span><b data-t="a_stock">स्टॉक</b></button>
+  <button type="button" data-tab="products"><span>🧺</span><b data-t="a_products">सामान</b></button>
+  <button type="button" data-tab="categories"><span>🗂️</span><b data-t="a_tab_cat">कैटेगरी</b></button>
+  <button type="button" data-tab="offers"><span>🏷️</span><b data-t="a_offers">ऑफर</b></button>
+  <button type="button" data-tab="reports"><span>📊</span><b data-t="a_reports">रिपोर्ट</b></button>
+  <button type="button" data-tab="settings"><span>⚙️</span><b data-t="a_settings">सेटिंग</b></button>
+</nav>
+<div class="sheet-back" id="sheetBack" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <header class="sheet-head"><h2 id="sheetTitle"></h2><button class="icon-btn" id="sheetClose" type="button" aria-label="Close">✕</button></header>
+  <div class="sheet-body" id="sheetBody"></div>
+</section>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/pwa.js?v=10.16.2"></script>
+<script src="/common.js?v=10.16.2-2"></script>
+<script src="/icons.js?v=10.16.2"></script>
+<script src="/stickers.js?v=10.16.2"></script>
+<script src="/type-profile.js?v=10.16.2"></script>
+<script src="/admin-core.js?v=10.16.2"></script>
+<script src="/devmode.js?v=10.16.2"></script>
+</body>
+</html>
