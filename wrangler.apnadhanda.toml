@@ -1,0 +1,29 @@
+name = "apnadhanda"
+main = "site/_worker.mjs"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+preview_urls = false
+
+[assets]
+directory = "./site"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "404-page"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kirana-db"
+database_id = "0fd7e022-f6f3-4697-8b34-eb81d2552888"
+
+# v10.12.5: real build time for /health (free version metadata binding)
+[version_metadata]
+binding = "CF_VERSION_METADATA"
+
+[vars]
+D1_DATABASE_ID = "0fd7e022-f6f3-4697-8b34-eb81d2552888"
+PUBLIC_ORIGIN = "https://apnadhanda.krishpatil.workers.dev"
+
+# v10.4: free Cron Trigger — daily 09:00 IST (03:30 UTC) due reminders into each shop's 🔔 notification panel
+[triggers]
+crons = ["30 3 * * *"]
