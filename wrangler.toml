@@ -1,0 +1,22 @@
+# v10: one Worker only (Krish, 2026-10-25). This file now deploys "apnadhanda" too, so a plain `wrangler deploy` can never recreate the old "kirana" Worker.
+name = "apnadhanda"
+main = "site/_worker.mjs"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+preview_urls = false
+
+[assets]
+directory = "./site"
+binding = "ASSETS"
+html_handling = "none"
+not_found_handling = "404-page"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kirana-db"
+database_id = "0fd7e022-f6f3-4697-8b34-eb81d2552888"
+
+[vars]
+D1_DATABASE_ID = "0fd7e022-f6f3-4697-8b34-eb81d2552888"
+PUBLIC_ORIGIN = "https://apnadhanda.krishpatil.workers.dev"
