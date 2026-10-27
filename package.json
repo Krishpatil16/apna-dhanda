@@ -1,0 +1,24 @@
+{
+ "name": "apna-dhanda",
+ "private": true,
+ "type": "module",
+ "scripts": {
+  "test": "node --test test/*.test.mjs",
+  "start": "wrangler dev --config wrangler.apnadhanda.toml",
+  "deploy": "node tools/stamp-build.mjs && node tools/build-admin.mjs && wrangler deploy --config wrangler.apnadhanda.toml",
+  "backup": "wrangler d1 export kirana-db --remote --config wrangler.apnadhanda.toml --output backup.sql",
+  "dev-password": "node tools/dev-password.mjs",
+  "dev": "node dev-server.mjs",
+  "stamp": "node tools/stamp-build.mjs",
+  "build": "node tools/build-admin.mjs"
+ },
+ "devDependencies": {
+  "acorn": "^8.19.0",
+  "better-sqlite3": "^12",
+  "esbuild": "^0.28.2",
+  "eslint-scope": "^8.4.0",
+  "http_ece": "^1.2.1",
+  "playwright-core": "*",
+  "wrangler": "^4"
+ }
+}

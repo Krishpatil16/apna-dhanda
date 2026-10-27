@@ -1,0 +1,76 @@
+# v10.10: AI product icons never change under the same ?v= — cache them for a year
+/icons/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# v10.10.1: every page asks for these as ?v=<APP_VERSION>, so one URL never changes — phones keep them a year and repeat visits skip the
+# revalidation round trip (≈2 s each on slow 3G). RULE: bump APP_VERSION (and the ?v= in the HTML) on EVERY deploy. Files loaded on demand
+# without ?v (qr.js, appicon.js, kirana-catalog.js, stock-import.js, pdf-text.js, sw.js) are deliberately NOT listed.
+/admin.js
+  Cache-Control: public, max-age=31536000, immutable
+/type-profile.js
+  Cache-Control: public, max-age=31536000, immutable
+/admin.css
+  Cache-Control: public, max-age=31536000, immutable
+/styles.css
+  Cache-Control: public, max-age=31536000, immutable
+/common.js
+  Cache-Control: public, max-age=31536000, immutable
+/icons.js
+  Cache-Control: public, max-age=31536000, immutable
+/stickers.js
+  Cache-Control: public, max-age=31536000, immutable
+/devmode.js
+  Cache-Control: public, max-age=31536000, immutable
+/pwa.js
+  Cache-Control: public, max-age=31536000, immutable
+/splash.css
+  Cache-Control: public, max-age=31536000, immutable
+/splash.js
+  Cache-Control: public, max-age=31536000, immutable
+/dev.js
+  Cache-Control: public, max-age=31536000, immutable
+/dev.css
+  Cache-Control: public, max-age=31536000, immutable
+/god.js
+  Cache-Control: public, max-age=31536000, immutable
+/god.css
+  Cache-Control: public, max-age=31536000, immutable
+/app.js
+  Cache-Control: public, max-age=31536000, immutable
+/landing.css
+  Cache-Control: public, max-age=31536000, immutable
+/landing.js
+  Cache-Control: public, max-age=31536000, immutable
+/intro.js
+  Cache-Control: public, max-age=31536000, immutable
+/shops.js
+  Cache-Control: public, max-age=31536000, immutable
+/shops.css
+  Cache-Control: public, max-age=31536000, immutable
+/shop3d.css
+  Cache-Control: public, max-age=31536000, immutable
+/shop3d.js
+  Cache-Control: public, max-age=31536000, immutable
+/track.js
+  Cache-Control: public, max-age=31536000, immutable
+# v10.16.1: the main page (landing2), salon booking page and God Mode as-shop files are always asked for with ?v= too — cache them a year
+/landing2.css
+  Cache-Control: public, max-age=31536000, immutable
+/landing2.js
+  Cache-Control: public, max-age=31536000, immutable
+/intro2.js
+  Cache-Control: public, max-age=31536000, immutable
+/salon.css
+  Cache-Control: public, max-age=31536000, immutable
+/salon.js
+  Cache-Control: public, max-age=31536000, immutable
+/god-as.js
+  Cache-Control: public, max-age=31536000, immutable
+# v10.16.2: the shop panel's scripts are built from admin.js (tools/build-admin.mjs): admin-core.js (first screens), admin-more.js
+# (loaded on first use / quietly after the first screen) and admin-boot.js (starts Today's two reads early). All asked for with ?v=.
+/admin-core.js
+  Cache-Control: public, max-age=31536000, immutable
+/admin-more.js
+  Cache-Control: public, max-age=31536000, immutable
+/admin-boot.js
+  Cache-Control: public, max-age=31536000, immutable
