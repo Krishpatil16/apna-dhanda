@@ -1,0 +1,25 @@
+/* Apna Dhanda v10.2 — 3D shop & grocery decoration layer (see shop3d.js). Never takes clicks, never covers text. */
+.s3d{position:absolute;left:0;top:0;width:100%;height:0;overflow:hidden;pointer-events:none;z-index:0;--mx:0;--my:0;--sy:0}
+body.admin .s3d{z-index:1}
+.s3d *{pointer-events:none}
+.s3d-o{position:absolute;perspective:600px;contain:layout style}
+.s3d-p{position:absolute;inset:0;transform-style:preserve-3d;
+  transform:translate3d(calc(var(--mx) * var(--d) * -20px),calc(var(--my) * var(--d) * -14px + var(--sy) * var(--d) * -.05px),0);transition:transform .5s cubic-bezier(.2,.7,.2,1);will-change:transform}
+.s3d-b{position:absolute;inset:0;transform-style:preserve-3d;animation:s3dBob var(--t) ease-in-out var(--dl) infinite;will-change:transform}
+.s3d-b span{position:absolute;inset:0;display:block;backface-visibility:visible}
+.s3d-b svg{display:block;width:100%;height:100%;overflow:visible}
+.s3d-f{transform:translateZ(5px);filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+.s3d-x1{transform:translateZ(1px);filter:brightness(.72)}
+.s3d-x2{transform:translateZ(-3px);filter:brightness(.5)}
+.s3d-sh{position:absolute;left:14%;right:14%;bottom:-12%;height:14%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.28),transparent);animation:s3dSh var(--t) ease-in-out var(--dl) infinite}
+@keyframes s3dBob{
+  0%,100%{transform:translateY(0) rotateX(8deg) rotateY(calc(var(--ry) * -1)) rotateZ(var(--rz))}
+  50%{transform:translateY(-14%) rotateX(-6deg) rotateY(var(--ry)) rotateZ(calc(var(--rz) * -.4))}}
+@keyframes s3dSh{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(.7);opacity:.5}}
+.s3d-paused .s3d-b,.s3d-paused .s3d-sh{animation-play-state:paused}
+.s3d-still .s3d-b,.s3d-still .s3d-sh{animation:none}
+.s3d-still .s3d-b{transform:rotateX(6deg) rotateY(calc(var(--ry) * -.8)) rotateZ(var(--rz))}
+.s3d-still .s3d-p{transition:none;transform:none}
+@media (max-width:599px){.s3d-x2{display:none}.s3d-o{opacity:.95}.s3d-b{animation-name:s3dBobS}}
+@keyframes s3dBobS{0%,100%{transform:translateY(0) rotateX(8deg) rotateY(calc(var(--ry) * -1)) rotateZ(var(--rz))}50%{transform:translateY(-8%) rotateX(-6deg) rotateY(var(--ry)) rotateZ(calc(var(--rz) * -.4))}}
+@media (prefers-reduced-motion:reduce){.s3d-b,.s3d-sh{animation:none!important}.s3d-p{transition:none!important;transform:none!important}}
