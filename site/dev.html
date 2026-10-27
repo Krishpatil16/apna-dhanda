@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>God Mode 👑 · {{BRAND}}</title>
+<meta name="theme-color" content="#1f6b3a">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<meta name="ak-app" content="dev">
+<link rel="manifest" href="/dev.webmanifest">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Dhanda Dev">
+<link rel="preload" href="/api/dev/state" as="fetch" crossorigin>
+<link rel="stylesheet" href="/splash.css?v=10.16.2">
+<script src="/splash.js?v=10.16.2"></script>
+<link rel="stylesheet" href="/dev.css?v=10.16.2">
+<link rel="stylesheet" href="/god.css?v=10.16.2">
+</head>
+<body>
+{{SPLASH}}
+<header class="top">
+  <div class="brand">{{BRAND_MARK}}<div><b class="g-title">God Mode <span aria-hidden="true">👑</span><span class="role-pill" title="Apna Dhanda Dev app">DEV</span></b><small id="shopName">{{BRAND}}</small></div><span class="dot" aria-hidden="true"></span></div>
+  <div class="top-r"><span id="svcPill" class="pill" hidden></span><button type="button" id="gBell" class="g-bell" aria-label="Notifications" aria-expanded="false" aria-controls="gDrop" hidden><span aria-hidden="true">🔔</span><i id="gBellN" hidden></i></button><button type="button" id="logout" class="ghost sm" hidden>Log out</button></div>
+</header>
+<div class="g-drop" id="gDrop" role="dialog" aria-label="Notifications" hidden></div>
+<div class="g-back" id="gBack" hidden><button type="button" id="gBackBtn" aria-label="Back">‹</button><b id="gTitle"></b><button type="button" id="gHomeBtn" class="g-hb" aria-label="Home">🏠</button></div>
+<nav class="tabs" id="tabs" aria-label="Sections" hidden>
+  <button type="button" data-sec="home" aria-current="page"><span aria-hidden="true">🏠</span><em>Home</em><b class="nb nb-dot" id="nbHome" hidden aria-label="new activity"></b></button>
+  <button type="button" data-sec="shops"><span aria-hidden="true">🏪</span><em>Shops</em><b class="nb" id="nbShops" hidden title="Waiting for approval"></b></button>
+  <button type="button" data-sec="notify"><span aria-hidden="true">📢</span><em>Notify</em></button>
+  <button type="button" data-sec="payments"><span aria-hidden="true">💰</span><em>Payments</em><b class="nb" id="nbPay" hidden title="Needs verifying"></b></button>
+  <button type="button" data-sec="settings"><span aria-hidden="true">⚙️</span><em>Settings</em></button>
+  <button type="button" data-sec="logs"><span aria-hidden="true">📋</span><em>Logs</em><i id="errBadge" hidden></i></button>
+</nav>
+<div class="wrap">
+<!-- v10.12.5 (Krish 8:57 PM: "Notification ka alag section banao niche me"): 📢 Notify is its own bottom tab; the top Shops pill row is gone -->
+<nav class="subnav" data-for="settings" aria-label="Settings" hidden>
+  <button type="button" data-tab="platform">💸 Plan &amp; UPI</button>
+  <button type="button" data-tab="landing">🏠 Landing page</button>
+  <button type="button" data-tab="cloud">☁️ Cloud usage</button>
+</nav>
+<nav class="subnav" data-for="logs" aria-label="Logs" hidden>
+  <button type="button" data-tab="dukaan">📊 Shop-wise</button>
+  <button type="button" data-tab="health">❤️ Health</button>
+  <button type="button" data-tab="audit">📜 Audit</button>
+  <button type="button" data-tab="errors">⚠️ Errors</button>
+</nav>
+<main id="app"><p class="muted center">Loading…</p></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<button type="button" class="ltoast" id="ltoast" role="status" aria-live="polite" hidden></button>
+<script src="/pwa.js?v=10.16.2"></script>
+<script src="/appicon.js?v=10.16.2"></script>
+<script src="/dev.js?v=10.16.2"></script>
+<script src="/god.js?v=10.16.2"></script>
+</body>
+</html>
