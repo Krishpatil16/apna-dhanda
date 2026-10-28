@@ -19,7 +19,7 @@ async function loadWorker(file = join(here, "..", "site", "_worker.mjs")){
     .replace(/const SETUP_KEY_SHA256 = "[a-f0-9]{64}"/, `const SETUP_KEY_SHA256 = "${sha("kirana-setup:" + TEST_KEY)}"`)
     .replace(/const DEV_SEED = \{[^}]*\};/, `const DEV_SEED = {username:"${DEV_USER}", salt:"${salt}", hash:"${hash}"};`);
   const dir = mkdtempSync(join(tmpdir(), "kirana-mt-")); const f = join(dir, `w${Math.random().toString(36).slice(2)}.mjs`);
-  writeFileSync(f, src); return (await import(f)).default;
+  writeFileSync(f, src); return withSecrets((await import(f)).default, {setupKey: TEST_KEY, devSeed: {username: DEV_USER, salt, hash}});
 }
 function makeEnv(DB){
   const sent = [];
@@ -76,6 +76,7 @@ async function base(){
 
 
 import vm from "node:vm";
+import { withSecrets } from "./secrets-helper.mjs";
 const NAMES = ["Haircut","Beard trim","Shave","Hair colour","Facial","Head massage"];
 const store = async (t, slug) => (await t.jar().call("GET", "/api/store", undefined, { shop: slug })).body;
 const adminCat = async J => (await J.call("GET", "/api/admin/catalog")).body;

@@ -4,7 +4,7 @@
 
 Live: https://apnadhanda.krishpatil.workers.dev · Current version: **10.16.2**
 
-> 🔒 Private, proprietary repository. Do not share code, screenshots or data outside the team. See [LICENSE](LICENSE).
+> 📖 This repository is **public** (anyone can read it), but the code is proprietary: all rights reserved, see [LICENSE](LICENSE). Never commit secrets, backups or shop/customer data.
 
 ---
 
@@ -89,7 +89,9 @@ Always take a backup first (`npm run backup` — the `.sql` file it writes conta
 Detailed architecture, data model, security rules and the per-version history: [docs/TECHNICAL-NOTES.md](docs/TECHNICAL-NOTES.md).
 
 ## Configuration and secrets
-- The Worker has **no secret values in code**. Passwords are stored as PBKDF2 hashes in D1; the setup key is checked against a SHA-256 hash.
+- The Worker has **no secrets and no secret hashes in code**. Shop and owner passwords are PBKDF2-SHA256 hashes (100k iterations) in D1.
+- The operator secrets are **Cloudflare Worker secrets**, stored only as PBKDF2 hashes: `SETUP_KEY_HASH`, `DEV_RECOVERY_HASH` and `DEV_SEED` (the God Mode account, used only on an empty database). Run `node tools/make-secrets.mjs` to make new random keys, then `npx wrangler secret put <NAME> --config wrangler.apnadhanda.toml` for each. If a secret is missing, setup and God Mode recovery just refuse; the rest of the app keeps working.
+- Tests run on every push and pull request (GitHub Actions, `.github/workflows/test.yml`).
 - Local values go in `.env` (copy from [.env.example](.env.example)). `.env`, `*.secret`, `.dev.vars`, backups and `local.sqlite` are git-ignored.
 - The D1 `database_id` in the toml files is an identifier, not a credential.
 
@@ -97,4 +99,4 @@ Detailed architecture, data model, security rules and the per-version history: [
 Friends who are added as collaborators: read [CONTRIBUTING.md](CONTRIBUTING.md). Short version: make a branch → open a Pull Request → Krish reviews → merge. Never push to `main` directly, never commit secrets or customer data.
 
 ## License
-All rights reserved — private, proprietary. See [LICENSE](LICENSE).
+All rights reserved — proprietary (the repository is public to read, not to reuse). See [LICENSE](LICENSE).

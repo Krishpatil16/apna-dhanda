@@ -133,7 +133,7 @@ if the backend is later rewritten in Next.js route handlers.
 - **Demo data:** 35 sample items in 8 categories, flagged `is_demo`, shown with a "नमूना / Sample" tag and a site-wide demo ribbon; "Remove all demo items" in admin deletes them (the shop's own items stay). Editing a demo item turns it into a real item.
 
 ### Admin security
-- No PIN or password in frontend code. The first admin is created at `/admin` with a **one-time setup key** (only its SHA-256 is in the worker). After one admin exists, setup is closed.
+- No PIN or password in frontend code. The first admin is created at `/admin` with a **one-time setup key** (only its PBKDF2 hash is stored, as the Worker secret `SETUP_KEY_HASH`; nothing is in the code). After one admin exists, setup is closed.
 - Passwords: PBKDF2-SHA256, 100k iterations, per-user salt. Sessions: random 256-bit token, stored hashed, `__Host-` cookie with `Secure; HttpOnly; SameSite=Strict`, 7 days.
 - Login rate limit: 8 failures / 15 min per IP and per username. Setup/recovery: 5 attempts / 15 min. Orders: 8 / 10 min per IP.
 - CSRF: SameSite=Strict + required `X-Requested-With: kirana` header + JSON-only bodies.
@@ -152,14 +152,14 @@ BASE=http://localhost:8787 SETUP_KEY=choose-a-local-key ADMIN_USER=bhaiya ADMIN_
 `e2e-browser.mjs` needs a Chromium binary (`CHROME=/path/to/chrome`).
 
 ## Configuration
-See `.env.example`. There are **no secrets in the frontend**; the only server-side value is the hash of the setup key.
+See `.env.example`. There are **no secrets in the frontend**; the operator values (`SETUP_KEY_HASH`, `DEV_RECOVERY_HASH`, `DEV_SEED`) are Cloudflare Worker secrets holding PBKDF2 hashes only.
 Store details (name, phone, WhatsApp number, address, hours, delivery area, charges, payment options, announcement,
 demo ribbon) are edited by the shopkeeper in **Admin → Settings**, not in code.
 
 ## Deployment
 Any Cloudflare Workers account (free plan is enough):
 1. Create a D1 database and bind it as `DB`; deploy `site/` with `_worker.mjs` as the main module and the folder as static assets (`html_handling: none`, so pages pass through the worker and get security headers). Tab's publisher does this from `site/tab-site.json`.
-2. Generate a long random setup key; put `sha256("kirana-setup:" + key)` into `SETUP_KEY_SHA256` at the top of `_worker.mjs` before deploying.
+2. Run `node tools/make-secrets.mjs` (new random setup key, recovery key and God Mode password; save them in a password manager), then store the three printed hashes with `npx wrangler secret put SETUP_KEY_HASH|DEV_RECOVERY_HASH|DEV_SEED --config wrangler.apnadhanda.toml`.
 3. Open `/admin`, enter the setup key, choose username + password. Keep the setup key safe — it is also the password-recovery key.
 4. In Settings: shop name, phone, WhatsApp number, delivery PIN codes, charges, hours; then add real items (or CSV import) and remove demo items.
 
@@ -223,10 +223,10 @@ Google's push service, an order is placed, and the push arrives in the service w
 **Developer console: `/dev`.** Built for the developer who maintains the shop's site. It is separate from the shopkeeper's `/admin`:
 its own table (`dev_accounts`, `dev_sessions`), its own cookie (`__Host-ks_dev`, Secure, HttpOnly, SameSite=Strict, 72 h), and its own CSRF
 header (`X-Requested-With: kirana-dev`). Logins are rate-limited (5 failures in 15 min per IP and per username). Passwords use PBKDF2-SHA256
-with 100k iterations. A recovery key (only its SHA-256 is in the worker) resets the password. The admin session cannot reach `/api/dev/*` and
+with 100k iterations. A recovery key (only its PBKDF2 hash, in the Worker secret `DEV_RECOVERY_HASH`) resets the password. The admin session cannot reach `/api/dev/*` and
 the dev session cannot reach `/api/admin/*`. Nothing in the admin UI or admin API reads or changes the developer tables or the service state.
-The initial account is seeded from `DEV_SEED` (username, salt and hash) at the top of `_worker.mjs`. To set new credentials, change
-`DEV_SEED` before the first deploy on a fresh database, or use the recovery key.
+The initial account is seeded from the Worker secret `DEV_SEED` (`username$salt$hash`) only when the database has no developer account. To change the
+password of the existing account use Dev → Platform → "Your account", or the recovery key. No secret means no seed and no recovery (God Mode stays locked).
 
 **Health (aggregates only, with no customer names, phones or addresses):** DB check and latency, app version, build time and when the build first served.
 Orders today, in the last 7 days and all time, a count per status, the last order time and the 7-day order value. Pending orders older than X minutes (X can be changed),

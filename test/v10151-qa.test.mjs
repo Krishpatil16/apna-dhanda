@@ -19,7 +19,7 @@ async function loadWorker(file = join(here, "..", "site", "_worker.mjs")){
     .replace(/const SETUP_KEY_SHA256 = "[a-f0-9]{64}"/, `const SETUP_KEY_SHA256 = "${sha("kirana-setup:" + TEST_KEY)}"`)
     .replace(/const DEV_SEED = \{[^}]*\};/, `const DEV_SEED = {username:"${DEV_USER}", salt:"${salt}", hash:"${hash}"};`);
   const dir = mkdtempSync(join(tmpdir(), "kirana-mt-")); const f = join(dir, `w${Math.random().toString(36).slice(2)}.mjs`);
-  writeFileSync(f, src); return (await import(f)).default;
+  writeFileSync(f, src); return withSecrets((await import(f)).default, {setupKey: TEST_KEY, devSeed: {username: DEV_USER, salt, hash}});
 }
 function makeEnv(DB){ // v10.15: ASSETS serves the real site files, so old and new workers render the same pages
 
@@ -82,6 +82,7 @@ const book = (c, slug, services, extra = {}) => c.call("POST", "/api/orders", { 
 
 
 import { randomBytes } from "node:crypto";
+import { withSecrets } from "./secrets-helper.mjs";
 function fakeSub(id){ const ecdh = createECDH("prime256v1"); ecdh.generateKeys();
   return { endpoint: `https://push.test/send/${id}`, keys: { p256dh: Buffer.from(ecdh.getPublicKey()).toString("base64url"), auth: randomBytes(16).toString("base64url") } }; }
 

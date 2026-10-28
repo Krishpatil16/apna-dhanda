@@ -1,14 +1,22 @@
 // Apna Kirana — backend: Cloudflare Worker + D1 (SQLite). Money = integer paise.
 // Store details (name, phone, WhatsApp, hours, delivery) are edited from /admin → Settings.
-// Nothing secret lives in the browser. The only server constant is the SHA-256 of the
-// one-time setup/recovery key held by the operator (the key itself is never in code).
-const SETUP_KEY_SHA256 = "e723cf497d2341e59c6876848d0b3b0168f61c061b33f7d4662b7a2d38c2ec0e";
+// Nothing secret lives in the browser, and no secret or secret hash lives in this file.
+//
+// Operator secrets live ONLY in Cloudflare Worker secrets (never in the repo):
+//   npx wrangler secret put SETUP_KEY_HASH    --config wrangler.apnadhanda.toml
+//   npx wrangler secret put DEV_RECOVERY_HASH --config wrangler.apnadhanda.toml
+//   npx wrangler secret put DEV_SEED          --config wrangler.apnadhanda.toml
+// SETUP_KEY_HASH / DEV_RECOVERY_HASH = "pbkdf2-sha256$<iterations>$<salt hex>$<hash hex>" (PBKDF2-SHA256 of the key, random salt).
+// DEV_SEED = "<username>$<salt hex>$<hash hex>" (PBKDF2-SHA256, 100k) — the developer (God Mode) account, created only on an empty database.
+// `node tools/make-secrets.mjs` prints all three for new random keys. A missing or malformed secret never breaks the app:
+// setup and God Mode recovery simply refuse, and no developer account is seeded.
+let SECRETS = {setup: "", recovery: "", seed: ""};
+function loadSecrets(env){ const e = env || {}; SECRETS = {setup: String(e.SETUP_KEY_HASH || ""), recovery: String(e.DEV_RECOVERY_HASH || ""), seed: String(e.DEV_SEED || "")}; }
 const SESSION_DAYS = 7;
 // ---- v3: developer (owner) panel ----
 // The developer account is separate from the shopkeeper's: its own table, cookie, CSRF header and rate limits.
-// Only a PBKDF2 hash of the password and a SHA-256 of the recovery key live here; the secrets are with the developer.
-const DEV_SEED = {username:"krish-dev", salt:"4f0858d20e50caaf1a87ded7886756d5", hash:"83525f89108662e65a633080eece6074893ed09b4f7c9db64da5d53a31abe96a"};
-const DEV_RECOVERY_SHA256 = "c57925e24b8f070edffec24c4efb0b00ea427e9c1581dac9ad60cb18e2d17ffe";
+// Its seed and the recovery key hash come from Worker secrets (DEV_SEED, DEV_RECOVERY_HASH) — see the top of this file.
+function devSeed(){ const m = /^([a-z0-9._-]{3,40})\$([0-9a-f]{32})\$([0-9a-f]{64})$/.exec(SECRETS.seed.trim()); return m ? {username: m[1], salt: m[2], hash: m[3]} : null; }
 const DEV_SESSION_HOURS = 72;
 const APP_VERSION = "10.16.2";
 const BUILD_TIME = "2026-10-27T10:28Z"; // v10.12.5: stamped by tools/stamp-build.mjs right before each deploy (fallback only)
@@ -95,10 +103,16 @@ const randHex = n => hex(crypto.getRandomValues(new Uint8Array(n)));
 const now = () => Date.now();
 const CODE_ALPHA = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const randCode = (n=6) => [...crypto.getRandomValues(new Uint8Array(n))].map(b => CODE_ALPHA[b % CODE_ALPHA.length]).join("");
-async function pbkdf2(password, saltHex){
+async function pbkdf2(password, saltHex, iterations = PBKDF2_ITER){
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveBits"]);
   const salt = new Uint8Array(saltHex.match(/../g).map(h => parseInt(h,16)));
-  return hex(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt, iterations:PBKDF2_ITER}, key, 256));
+  return hex(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt, iterations}, key, 256));
+}
+// Checks a key against a "pbkdf2-sha256$<iterations>$<salt hex>$<hash hex>" Worker secret. Missing/malformed secret → false (refuse).
+async function keyHashOk(key, stored){
+  const m = /^pbkdf2-sha256\$(\d{4,6})\$([0-9a-f]{32,64})\$([0-9a-f]{64})$/.exec(String(stored || "").trim()); if (!m) return false;
+  const iter = Number(m[1]); if (iter < 10000 || iter > 100000) return false; // Workers' PBKDF2 limit is 100k
+  return safeEq(await pbkdf2(key, m[2], iter), m[3]);
 }
 function safeEq(a,b){ if (typeof a!=="string"||typeof b!=="string"||a.length!==b.length) return false; let r=0; for (let i=0;i<a.length;i++) r|=a.charCodeAt(i)^b.charCodeAt(i); return r===0; }
 
@@ -564,9 +578,9 @@ async function migrate(db){
     }
     await db.batch(st);
   }
-  const t0 = now();
+  const t0 = now(); const seed = devSeed(); // no DEV_SEED secret → no developer account is created (God Mode stays locked)
   await db.batch([
-    db.prepare(`INSERT OR IGNORE INTO dev_accounts (username,pass_hash,salt,created_at) SELECT ?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM dev_accounts)`).bind(DEV_SEED.username, DEV_SEED.hash, DEV_SEED.salt, t0),
+    ...(seed ? [db.prepare(`INSERT OR IGNORE INTO dev_accounts (username,pass_hash,salt,created_at) SELECT ?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM dev_accounts)`).bind(seed.username, seed.hash, seed.salt, t0)] : []),
     db.prepare(`INSERT OR IGNORE INTO service_state (k,v) VALUES (?,?)`).bind("first_seen:" + APP_VERSION + "@" + BUILD_TIME, String(t0))
   ]);
   migrated = true;
@@ -690,7 +704,7 @@ async function newSession(db, adminId, devId = null){
 // Who did it: the shopkeeper, or the developer acting inside a shop ("login as shop" or the /dev shop editor)
 const actorOf = a => a.dev ? "dev:" + a.dev : "admin:" + a.username;
 function checkPassword(p){ if (typeof p!=="string" || p.length < 8 || p.length > 128) fail(400,"weak_password","Password must be 8–128 characters"); return p; }
-async function setupKeyOk(key){ return typeof key==="string" && key.length >= 8 && safeEq(await sha256("kirana-setup:"+key), SETUP_KEY_SHA256); }
+async function setupKeyOk(key){ return typeof key==="string" && key.length >= 8 && key.length <= 256 && await keyHashOk(key, SECRETS.setup); }
 
 // ---------- serialisation ----------
 async function catalog(db, {admin=false}={}){
@@ -2765,7 +2779,7 @@ async function newDevSession(db, devId){
   await db.prepare(`INSERT INTO dev_sessions (token_hash,dev_id,expires_at,created_at) VALUES (?,?,?,?)`).bind(await sha256(tok), devId, now()+DEV_SESSION_HOURS*3600000, now()).run();
   return `${DEV_COOKIE}=${tok}; Path=${DEV_COOKIE_PATH}; Secure; HttpOnly; SameSite=Strict; Max-Age=${DEV_SESSION_HOURS*3600}`;
 }
-async function devRecoveryOk(key){ return typeof key==="string" && key.length >= 12 && safeEq(await sha256("kirana-dev-recover:"+key), DEV_RECOVERY_SHA256); }
+async function devRecoveryOk(key){ return typeof key==="string" && key.length >= 12 && key.length <= 256 && await keyHashOk(key, SECRETS.recovery); }
 
 async function tableCount(db, t){ try { return (await db.prepare(`SELECT COUNT(*) AS n FROM ${t}`).first()).n; } catch { return null; } }
 const DEV_TABLES = ["shops","shop_settings","orders","order_items","order_events","products","variants","categories","offers","offer_items","images","push_subscriptions","notification_attempts","admins","sessions","rate_events","error_log","metrics","service_log","dev_sessions","audit_log","order_ratings"];
@@ -4154,7 +4168,7 @@ function migrateCookies(req, url, res){
 export default {
   async fetch(req, env, ctx) {
     const url = new URL(req.url);
-    LOG_DB = env.DB;
+    LOG_DB = env.DB; loadSecrets(env);
     if (!RUNTIME_BUILD) { const ts = env.CF_VERSION_METADATA && env.CF_VERSION_METADATA.timestamp; if (ts) RUNTIME_BUILD = String(ts); }
     let res, logged = false;
     try { res = await handle(req, env, url, ctx); }
@@ -4176,7 +4190,7 @@ export default {
   },
   // v10.4: Cloudflare Cron Trigger (free) — daily ⏰ due reminders into each shop's notification panel (+ Web Push).
   async scheduled(event, env, ctx) {
-    LOG_DB = env.DB;
+    LOG_DB = env.DB; loadSecrets(env);
     const job = (async () => {
       try {
         await migrate(env.DB);

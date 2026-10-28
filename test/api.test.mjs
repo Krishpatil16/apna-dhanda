@@ -6,6 +6,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { makeD1 } from "./d1-shim.mjs";
+import { withSecrets } from "./secrets-helper.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SITE = join(here, "..", "site");
@@ -14,7 +15,7 @@ const TEST_KEY = "test-setup-key-123456";
 async function loadWorker(){
   const src = readFileSync(join(SITE, "_worker.mjs"), "utf8").replace(/const SETUP_KEY_SHA256 = "[a-f0-9]{64}"/, `const SETUP_KEY_SHA256 = "${createHash("sha256").update("kirana-setup:"+TEST_KEY).digest("hex")}"`);
   const dir = mkdtempSync(join(tmpdir(), "kirana-")); const f = join(dir, `w${Math.random().toString(36).slice(2)}.mjs`);
-  writeFileSync(f, src); return (await import(f)).default;
+  writeFileSync(f, src); return withSecrets((await import(f)).default, {setupKey: TEST_KEY});
 }
 async function env(){
   const worker = await loadWorker(); const DB = makeD1();

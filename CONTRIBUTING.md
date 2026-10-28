@@ -1,6 +1,6 @@
 # Contributing to Apna Dhanda
 
-Thanks for helping! This is a private project — only invited collaborators can see it.
+Thanks for helping! The repository is public to read, but only invited collaborators can push or open branches here. Because anyone can read it, never put a secret, key, password hash, backup or shop data in a commit.
 
 ## Workflow
 1. **Never push to `main` directly.** `main` is what goes live.

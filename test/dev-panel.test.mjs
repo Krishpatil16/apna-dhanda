@@ -8,6 +8,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { makeD1 } from "./d1-shim.mjs";
+import { withSecrets } from "./secrets-helper.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const SITE = join(here, "..", "site");
@@ -21,9 +22,9 @@ async function loadWorker(){
     .replace(/const SETUP_KEY_SHA256 = "[a-f0-9]{64}"/, `const SETUP_KEY_SHA256 = "${sha("kirana-setup:" + TEST_KEY)}"`)
     .replace(/const DEV_SEED = \{[^}]*\};/, `const DEV_SEED = {username:"${DEV_USER}", salt:"${salt}", hash:"${hash}"};`)
     .replace(/const DEV_RECOVERY_SHA256 = "[a-f0-9]{64}"/, `const DEV_RECOVERY_SHA256 = "${sha("kirana-dev-recover:" + DEV_REC)}"`);
-  assert.ok(src.includes(hash), "dev seed replaced");
+  assert.ok(!/const DEV_SEED = \{/.test(src) || src.includes(hash), "old-format dev seed replaced");
   const dir = mkdtempSync(join(tmpdir(), "kirana-dev-")); const f = join(dir, `w${Math.random().toString(36).slice(2)}.mjs`);
-  writeFileSync(f, src); return (await import(f)).default;
+  writeFileSync(f, src); return withSecrets((await import(f)).default, {setupKey: TEST_KEY, devSeed: {username: DEV_USER, salt, hash}, devRecovery: DEV_REC});
 }
 // Two separate cookie jars (shopkeeper's phone and developer's phone) against one database.
 async function world(){
