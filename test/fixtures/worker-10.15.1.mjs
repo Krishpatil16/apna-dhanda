@@ -2,13 +2,13 @@
 // Store details (name, phone, WhatsApp, hours, delivery) are edited from /admin → Settings.
 // Nothing secret lives in the browser. The only server constant is the SHA-256 of the
 // one-time setup/recovery key held by the operator (the key itself is never in code).
-const SETUP_KEY_SHA256 = "e723cf497d2341e59c6876848d0b3b0168f61c061b33f7d4662b7a2d38c2ec0e";
+const SETUP_KEY_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000";
 const SESSION_DAYS = 7;
 // ---- v3: developer (owner) panel ----
 // The developer account is separate from the shopkeeper's: its own table, cookie, CSRF header and rate limits.
 // Only a PBKDF2 hash of the password and a SHA-256 of the recovery key live here; the secrets are with the developer.
-const DEV_SEED = {username:"krish-dev", salt:"4f0858d20e50caaf1a87ded7886756d5", hash:"83525f89108662e65a633080eece6074893ed09b4f7c9db64da5d53a31abe96a"};
-const DEV_RECOVERY_SHA256 = "c57925e24b8f070edffec24c4efb0b00ea427e9c1581dac9ad60cb18e2d17ffe";
+const DEV_SEED = {username:"krish-dev", salt:"00000000000000000000000000000000", hash:"0000000000000000000000000000000000000000000000000000000000000000"};
+const DEV_RECOVERY_SHA256 = "0000000000000000000000000000000000000000000000000000000000000000";
 const DEV_SESSION_HOURS = 72;
 const APP_VERSION = "10.15.1";
 const BUILD_TIME = "2026-10-26T21:00Z"; // v10.12.5: stamped by tools/stamp-build.mjs right before each deploy (fallback only)
